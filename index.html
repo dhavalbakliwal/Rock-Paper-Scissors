@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>House of Adheera - Luxury Management Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #F9F6F0;
+            --surface-color: #FFFFFF;
+            --primary: #1A1A1A;
+            --accent-gold: #D4AF37;
+            --accent-gold-light: #F3E5AB;
+            --accent-purple: #5B4B8A;
+            --text-main: #2C2C2C;
+            --text-muted: #737373;
+            --success: #00897B;
+            --danger: #D32F2F;
+            --warning: #F57F17;
+            --shadow: 0 15px 35px rgba(212, 175, 55, 0.08);
+            --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.03);
+            --border-radius: 24px;
+            --card-border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary: #F9F6F0;
+            --accent-gold: #E5C158;
+            --accent-gold-light: #2A2514;
+            --accent-purple: #9D84ED;
+            --text-main: #E0E0E0;
+            --text-muted: #A0A0A0;
+            --success: #26A69A;
+            --danger: #EF5350;
+            --warning: #FFEE58;
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --card-border: 1px solid rgba(229, 193, 88, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 110px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.35;
+            animation: floatGlow 12s infinite alternate ease-in-out;
+        }
+
+        body::before {
+            background: linear-gradient(135deg, #D4AF3744, #F3E5AB44);
+            top: -100px;
+            left: -100px;
+        }
+
+        body::after {
+            background: linear-gradient(135deg, #5B4B8A44, #D4AF3722);
+            bottom: -50px;
+            right: -100px;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 40px) scale(1.1); }
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        header {
+            padding: 32px 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title-box h1 { font-size: 26px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; margin-bottom: 4px; }
+        .header-title-box p.subtitle { color: var(--text-muted); font-size: 13px; font-weight: 400; letter-spacing: 0.2px; }
+
+        .theme-toggle-btn {
+            background: var(--surface-color);
+            border: var(--card-border);
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease;
+        }
+        .theme-toggle-btn:active { transform: scale(0.9); }
+
+        .view { display: none; padding: 0 16px 20px; opacity: 0; transform: translateY(15px); }
+        .view.active { display: block; animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+        .card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: var(--card-border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:active { transform: scale(0.97); }
+        .card.full-width { grid-column: span 2; }
+        
+        .card-title { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .card-amount { font-size: 26px; font-weight: 700; color: var(--primary); word-break: break-all; }
+        .card-desc { font-size: 12px; color: var(--text-muted); margin-top: 6px; line-height: 1.3; }
+
+        .text-green { color: var(--success); }
+        .text-red { color: var(--danger); }
+        .text-gold { color: var(--accent-gold); }
+        .text-warning { color: var(--warning); }
+
+        .quick-actions { display: flex; gap: 12px; margin-bottom: 24px; }
+        .btn-action {
+            flex: 1;
+            padding: 16px 10px;
+            border-radius: 20px;
+            border: var(--card-border);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+            background: var(--surface-color);
+            color: var(--primary);
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
+        }
+        .btn-action:active { transform: scale(0.94); }
+        .btn-in span { color: var(--success); }
+        .btn-out span { color: var(--danger); }
+        .btn-dress span { color: var(--accent-gold); }
+
+        .reminder-box {
+            background: var(--accent-gold-light);
+            border: 1px solid var(--accent-gold);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .reminder-box h3 { color: #8A6D00; margin-bottom: 10px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        [data-theme="dark"] .reminder-box h3 { color: #F3E5AB; }
+        
+        .reminder-scroll-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+        .reminder-scroll-container::-webkit-scrollbar { display: none; }
+
+        .reminder-item {
+            flex: 0 0 210px;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: var(--surface-color);
+            padding: 14px;
+            border-radius: 16px;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: var(--card-border);
+        }
+
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--primary); letter-spacing: 0.2px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 16px 18px;
+            border: 1.5px solid rgba(212, 175, 55, 0.25);
+            border-radius: 18px;
+            font-size: 15px;
+            background: var(--surface-color);
+            outline: none;
+            transition: all 0.2s ease;
+            color: var(--primary);
+        }
+        input:focus, select:focus { border-color: var(--accent-gold); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
+        input[readonly] { background: rgba(0,0,0,0.04); color: var(--text-muted); }
+        .amount-input { font-size: 22px; font-weight: 700; color: var(--accent-gold); }
+
+        .radio-group { display: flex; gap: 10px; }
+        .radio-btn {
+            flex: 1;
+            padding: 14px 10px;
+            text-align: center;
+            border: 1.5px solid rgba(212, 175, 55, 0.25);
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            background: var(--surface-color);
+            color: var(--primary);
+            transition: all 0.2s;
+        }
+        .radio-btn.selected { background: var(--primary); color: var(--bg-color); border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+        .btn-save {
+            width: 100%;
+            padding: 18px;
+            border-radius: 18px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-gold), #B89728);
+            color: #1A1A1A;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 8px 25px rgba(212,175,55,0.25);
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-save:active { transform: scale(0.96); }
+        
+        .btn-outline {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px dashed var(--accent-gold);
+            background: var(--surface-color);
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+            margin-bottom: 14px;
+            transition: background 0.2s;
+        }
+
+        .section-title { font-size: 18px; font-weight: 700; margin: 24px 0 14px; color: var(--primary); letter-spacing: -0.3px; }
+        .list-item {
+            background: var(--surface-color);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            border: var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .customer-card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: var(--card-border);
+        }
+        .customer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1.5px solid rgba(212,175,55,0.15); padding-bottom: 10px; gap: 10px; }
+        .customer-header h2 { font-size: 18px; font-weight: 700; color: var(--primary); text-transform: capitalize; }
+        
+        .measurement-badge { background: var(--accent-gold-light); color: var(--primary); padding: 10px 14px; border-radius: 14px; font-size: 12px; font-weight: 600; margin-bottom: 12px; border: 1px solid rgba(212,175,55,0.3); line-height: 1.5; }
+        .order-sub-item { background: rgba(212,175,55,0.03); border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid rgba(212,175,55,0.1); }
+        .products-list-display { font-size: 13px; color: var(--text-muted); margin: 6px 0 10px; font-weight: 500; }
+
+        .action-bar { width: 100%; display: flex; gap: 8px; margin-top: 12px; border-top: 1px solid rgba(212,175,55,0.15); padding-top: 10px; flex-wrap: wrap; }
+        .btn-small { padding: 8px 12px; border-radius: 10px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: transform 0.1s; }
+        .btn-small:active { transform: scale(0.92); }
+        .btn-edit { background: rgba(0,123,255,0.1); color: #007BFF; }
+        .btn-delete { background: rgba(220,53,69,0.1); color: var(--danger); }
+        .btn-receive { background: rgba(0,137,123,0.1); color: var(--success); flex: 1; text-align: center; }
+        .btn-print { background: rgba(91,75,138,0.1); color: var(--accent-purple); }
+        .btn-measure { background: var(--accent-gold-light); color: var(--primary); border: 1px solid var(--accent-gold); }
+
+        .calc-box { background: var(--surface-color); border-radius: var(--border-radius); padding: 18px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: var(--card-border); }
+        .calc-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 500; }
+        .calc-total { font-size: 17px; font-weight: 700; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 10px; margin-top: 10px; color: var(--primary); }
+
+        .summary-tabs { display: flex; background: rgba(212,175,55,0.1); border-radius: 14px; padding: 4px; margin-bottom: 16px; border: 1px solid rgba(212,175,55,0.2); }
+        .summary-tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; border-radius: 10px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
+        .summary-tab.active { background: var(--surface-color); color: var(--primary); box-shadow: var(--shadow-sm); }
+
+        .graph-container { margin-top: 14px; background: rgba(212,175,55,0.05); padding: 12px; border-radius: 14px; }
+        .graph-bar-wrapper { margin-bottom: 8px; }
+        .graph-bar-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); }
+        .graph-bar-track { background: rgba(0,0,0,0.1); height: 10px; border-radius: 5px; overflow: hidden; display: flex; }
+        .graph-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+
+        /* Smooth Modal Pop Animations */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .modal-card {
+            background: var(--surface-color);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+            border: var(--card-border);
+            transform: scale(0.9) translateY(20px);
+            animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes modalPop {
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .invoice-header { text-align: center; border-bottom: 2px dashed var(--accent-gold); padding-bottom: 14px; margin-bottom: 14px; }
+        .invoice-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+        .invoice-table th, .invoice-table td { border-bottom: 1px solid rgba(212,175,55,0.2); padding: 8px 4px; text-align: left; }
+        .invoice-table th { color: var(--text-muted); font-weight: 600; }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: var(--surface-color);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+            max-width: 448px;
+            margin: 0 auto;
+            border: var(--card-border);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; gap: 3px; cursor: pointer; transition: color 0.2s; }
+        .nav-item.active { color: var(--accent-gold); }
+        .nav-icon { font-size: 20px; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .nav-item.active .nav-icon { transform: scale(1.2); }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; font-weight: 500; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #bill-modal, #bill-modal * { visibility: visible; }
+            #bill-modal { position: absolute; left: 0; top: 0; background: white; padding: 0; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="app-container">
+
+    <!-- 1. DASHBOARD -->
+    <div id="view-dashboard" class="view active">
+        <header>
+            <div class="header-title-box">
+                <h1>Rani Jain ✨</h1>
+                <p class="subtitle">House of Adheera Studio</p>
+            </div>
+            <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+        </header>
+
+        <div id="reminders-container"></div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-title">Total Inflow</div>
+                <div class="card-amount text-green" id="dash-in">₹0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Outflow</div>
+                <div class="card-amount text-red" id="dash-out">₹0</div>
+            </div>
+            <div class="card full-width">
+                <div class="card-title">Available Balance</div>
+                <div class="card-amount text-gold" id="dash-balance">₹0</div>
+                <div class="card-desc">Actual liquidity & bank funds remaining.</div>
+            </div>
+            <div class="card full-width" style="background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.18));">
+                <div class="card-title" style="color: var(--accent-gold);">Boutique Net Profit</div>
+                <div class="card-amount text-gold" id="dash-profit">₹0</div>
+                <div class="card-desc">Gross revenue minus creation cost.</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="btn-action btn-in" onclick="navTo('view-paisa-aaya')">
+                <span style="font-size:22px;">💰</span> Money In
+            </button>
+            <button class="btn-action btn-out" onclick="navTo('view-paisa-gaya')">
+                <span style="font-size:22px;">💸</span> Money Out
+            </button>
+            <button class="btn-action btn-dress" onclick="navTo('view-new-order')">
+                <span style="font-size:22px;">👗</span> New Order
+            </button>
+        </div>
+
+        <h3 class="section-title">Recent Transactions</h3>
+        <div id="recent-transactions-list"></div>
+    </div>
+
+    <!-- 2. MONEY IN -->
+    <div id="view-paisa-aaya" class="view">
+        <header>
+            <div class="header-title-box">
+                <h1 id="in-title">Record Inflow 💰</h1>
+                <p class="subtitle">Log client payments & deposits.</p>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
+        </header>
+        <div class="form-group">
+            <label style="display:flex; justify-content:space-between;">Amount Received <button type="button" class="btn-small btn-edit" onclick="startVoiceInput('in-amount', 'in-source')">🎙️ Speak</button></label>
+            <input type="number" id="in-amount" class="amount-input" placeholder="₹0" inputmode="numeric">
+        </div>
+        <div class="form-group"><label>Date</label><input type="date" id="in-date"></div>
+        <div class="form-group">
+            <label>Source / Client Name</label>
+            <input type="text" id="in-source" list="customer-suggestions" placeholder="E.g., Riya">
+        </div>
+        <div class="form-group">
+            <label>Category</label>
+            <select id="in-category">
+                <option value="Customer Advance">Customer Advance</option>
+                <option value="Full Payment">Full Payment</option>
+                <option value="Pending Cleared">Pending Cleared</option>
+                <option value="Other Income">Other Income</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Payment Mode</label>
+            <div class="radio-group">
+                <div class="radio-btn selected" id="btn-in-cash" onclick="setMode('in', 'Cash')">💵 Cash</div>
+                <div class="radio-btn" id="btn-in-online" onclick="setMode('in', 'Online')">📱 Online</div>
+            </div>
+            <input type="hidden" id="in-mode" value="Cash">
+        </div>
+        <button class="btn-save" onclick="savePaisaAaya()" id="in-save-btn">Save Entry</button>
+    </div>
+
+    <!-- 3. MONEY OUT -->
+    <div id="view-paisa-gaya" class="view">
+        <header>
+            <div class="header-title-box">
+                <h1 id="out-title">Record Expense 💸</h1>
+                <p class="subtitle">Log studio overheads & payouts.</p>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
+        </header>
+        <div class="form-group">
+            <label style="display:flex; justify-content:space-between;">Amount Spent <button type="button" class="btn-small btn-edit" onclick="startVoiceInput('out-amount', 'out-payee')">🎙️ Speak</button></label>
+            <input type="number" id="out-amount" class="amount-input" placeholder="₹0" inputmode="numeric">
+        </div>
+        <div class="form-group"><label>Date</label><input type="date" id="out-date"></div>
+        <div class="form-group">
+            <label>Expense Category</label>
+            <select id="out-category">
+                <option value="Fabric">🧵 Fabric</option>
+                <option value="Karigar">✂️ Karigar / Stitching</option>
+                <option value="Accessories">🎀 Accessories (Lace, Buttons)</option>
+                <option value="Rent">🏠 Rent</option>
+                <option value="Electricity">⚡ Electricity</option>
+                <option value="Travel">🚕 Travel / Market</option>
+                <option value="Personal Withdrawal">👩 Personal Withdrawal</option>
+                <option value="Other">📝 Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Paid To / Payee Name (Optional)</label>
+            <input type="text" id="out-payee" list="karigar-suggestions" placeholder="E.g., Ramesh">
+        </div>
+        <div class="form-group">
+            <label>Payment Mode</label>
+            <div class="radio-group">
+                <div class="radio-btn selected" id="btn-out-cash" onclick="setMode('out', 'Cash')">💵 Cash</div>
+                <div class="radio-btn" id="btn-out-online" onclick="setMode('out', 'Online')">📱 Online</div>
+            </div>
+            <input type="hidden" id="out-mode" value="Cash">
+        </div>
+        <button class="btn-save" onclick="savePaisaGaya()" id="out-save-btn">Save Expense</button>
+    </div>
+
+    <!-- 4. CLIENTS OVERVIEW -->
+    <div id="view-orders" class="view">
+        <header>
+            <div class="header-title-box">
+                <h1>Clients Overview 👥</h1>
+                <p class="subtitle">Profiles, Naap Book & Order History.</p>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
+        </header>
+        <button class="btn-save" style="margin-bottom: 16px;" onclick="navTo('view-new-order')">+ Create New Order</button>
+        <div id="orders-list"></div>
+    </div>
+
+    <!-- 5. NEW/EDIT ORDER -->
+    <div id="view-new-order" class="view">
+        <header>
+            <div class="header-title-box">
+                <h1 id="ord-title">New Order ✨</h1>
+                <p class="subtitle">Custom tailoring & instant profit calculator.</p>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
+        </header>
+
+        <div class="form-group">
+            <label>Client Name</label>
+            <input type="text" id="ord-customer" list="customer-suggestions" placeholder="E.g., Neha">
+        </div>
+        
+        <div class="form-group">
+            <label>Products / Dresses</label>
+            <div id="products-container"></div>
+            <button class="btn-outline" onclick="addProductField()">+ Add Another Product</button>
+        </div>
+        
+        <div class="form-group">
+            <label>Total Order Price</label>
+            <input type="number" id="ord-total-price" placeholder="₹0" class="amount-input" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Payment Received</label>
+            <div class="radio-group" style="margin-bottom: 8px;">
+                <div class="radio-btn selected" id="btn-pay-full" onclick="setPayType('Full')">Full Payment</div>
+                <div class="radio-btn" id="btn-pay-part" onclick="setPayType('Part')">Advance (Part)</div>
+            </div>
+            <input type="hidden" id="ord-pay-type" value="Full">
+            <div id="ord-advance-div" style="display:none;">
+                <input type="number" id="ord-received" placeholder="Amount received? (₹)" oninput="calculateOrderProfit()">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:-8px;">
+            <label>Payment Mode</label>
+            <div class="radio-group">
+                <div class="radio-btn selected" id="btn-ord-cash" onclick="setMode('ord', 'Cash')">💵 Cash</div>
+                <div class="radio-btn" id="btn-ord-online" onclick="setMode('ord', 'Online')">📱 Online</div>
+            </div>
+            <input type="hidden" id="ord-mode" value="Cash">
+        </div>
+
+        <h3 class="section-title">Cost of Production</h3>
+        
+        <div class="form-group"><label>Total Fabric Cost</label><input type="number" id="ord-fabric" placeholder="₹0" oninput="calculateOrderProfit()"></div>
+        
+        <div class="form-group">
+            <label>Karigar Payouts</label>
+            <div id="karigars-container"></div>
+            <button class="btn-outline" onclick="addKarigarField()">+ Add Another Karigar</button>
+        </div>
+
+        <div class="form-group"><label>Accessories & Other Expenses</label><input type="number" id="ord-other" placeholder="₹0" oninput="calculateOrderProfit()"></div>
+
+        <div class="calc-box">
+            <div class="calc-row"><span>Total Bill:</span> <span id="calc-price">₹0</span></div>
+            <div class="calc-row"><span>Production Cost:</span> <span id="calc-cost" class="text-red">- ₹0</span></div>
+            <div class="calc-total text-gold">Net Profit: <span id="calc-profit">₹0</span></div>
+            <div class="calc-row" style="margin-top:8px; font-size:13px;">
+                <span>Pending Collection:</span> <span id="calc-pending" class="text-warning" style="font-weight:700;">₹0</span>
+            </div>
+        </div>
+
+        <button class="btn-save" onclick="saveOrder()" id="ord-save-btn">Save Order</button>
+    </div>
+
+    <!-- 6. SUMMARY & REPORTS -->
+    <div id="view-summary" class="view">
+        <header>
+            <div class="header-title-box">
+                <h1>Financial Reports 📊</h1>
+                <p class="subtitle">Analytics, monthly breakdown & VIP insights.</p>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
+        </header>
+
+        <div class="summary-tabs">
+            <div class="summary-tab active" id="tab-monthly" onclick="switchSummaryMode('monthly')">📅 Monthly</div>
+            <div class="summary-tab" id="tab-overall" onclick="switchSummaryMode('overall')">🌐 Overall</div>
+        </div>
+
+        <div class="form-group" id="month-selector-group" style="background:var(--surface-color); padding:16px; border-radius:var(--border-radius); box-shadow:var(--shadow-sm); border:var(--card-border);">
+            <label for="summary-month-select" style="font-weight:700; color:var(--accent-gold); margin-bottom:8px;">Select Reporting Month:</label>
+            <select id="summary-month-select" onchange="renderSummary()"></select>
+        </div>
+
+        <div class="calc-box">
+            <h3 id="selected-summary-title" style="margin-bottom:12px; color:var(--primary); font-size:16px;">Breakdown</h3>
+            <div class="calc-row"><span>Total Inflow:</span> <span id="sum-in" class="text-green">₹0</span></div>
+            <div class="calc-row"><span>Studio Expenses:</span> <span id="sum-out-biz" class="text-red">₹0</span></div>
+            <div class="calc-row"><span>Personal Withdrawals:</span> <span id="sum-out-pers" class="text-text-muted">₹0</span></div>
+            <div class="calc-total">Net Cash Profit: <span id="sum-profit" class="text-gold">₹0</span></div>
+
+            <div class="graph-container">
+                <div class="graph-bar-wrapper">
+                    <div class="graph-bar-label"><span>Inflow vs Expenses Ratio</span></div>
+                    <div class="graph-bar-track">
+                        <div class="graph-bar-fill" id="graph-in-fill" style="width: 50%; background: var(--success);"></div>
+                        <div class="graph-bar-fill" id="graph-out-fill" style="width: 50%; background: var(--danger);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calc-box" id="vip-customers-section" style="background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.15)); border: var(--card-border);">
+            <h3 style="margin-bottom:12px; color:var(--accent-gold); font-size:16px;">⭐ Top VIP Clients (By Revenue)</h3>
+            <div id="vip-customers-list"></div>
+        </div>
+
+        <div class="calc-box" id="karigar-summary-section" style="display:none;">
+            <h3 style="margin-bottom:12px; color:var(--accent-gold); font-size:16px;">✂️ Karigar Payouts Summary</h3>
+            <div id="karigar-summary-list"></div>
+        </div>
+
+        <h3 class="section-title">Transactions Log</h3>
+        <div id="history-list"></div>
+    </div>
+
+    <!-- DIGITAL INVOICE MODAL -->
+    <div id="bill-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="invoice-header">
+                <h2>House of Adheera ✨</h2>
+                <p style="font-size:12px; color:var(--text-muted);">Exclusive Designer Boutique & Studio</p>
+                <p style="font-size:11px; margin-top:4px;" id="inv-date">Date: </p>
+            </div>
+            
+            <div style="margin-bottom: 12px; font-size: 13px;">
+                <strong>Client Name:</strong> <span id="inv-customer-name" style="text-transform: capitalize;"></span><br>
+                <strong>Invoice ID:</strong> <span id="inv-id"></span>
+            </div>
+
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Item Description</th>
+                        <th style="text-align:right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="inv-items-body"></tbody>
+            </table>
+
+            <div style="border-top: 1px solid rgba(212,175,55,0.3); padding-top: 10px; margin-top: 10px; font-size: 14px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                    <span>Total Bill:</span>
+                    <span id="inv-total">₹0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--success); margin-top: 4px;">
+                    <span>Amount Paid:</span>
+                    <span id="inv-paid">₹0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--danger); margin-top: 4px;" id="inv-pending-row">
+                    <span>Balance Pending:</span>
+                    <span id="inv-pending">₹0</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 11px; color: var(--text-muted);">
+                Thank you for choosing House of Adheera! 💕
+            </div>
+
+            <div class="action-bar no-print" style="margin-top: 20px; border-top: none;">
+                <button class="btn-small btn-edit" style="flex:1; padding: 12px;" onclick="window.print()">🖨️ Print</button>
+                <button class="btn-small btn-receive" style="flex:1; padding: 12px;" onclick="shareOnWhatsApp()">💬 WhatsApp</button>
+                <button class="btn-small btn-delete" style="padding: 12px 16px;" onclick="closeModal('bill-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEASUREMENTS MODAL -->
+    <div id="measure-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-size: 18px; color: var(--primary); margin-bottom: 4px;">📐 Naap Book</h2>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;" id="measure-cust-title">Client Measurements</p>
+            
+            <div id="measurements-inputs-container">
+                <div class="form-group"><label>Chest / Bust (Inches)</label><input type="text" id="m-chest" placeholder="E.g., 36"></div>
+                <div class="form-group"><label>Waist (Inches)</label><input type="text" id="m-waist" placeholder="E.g., 30"></div>
+                <div class="form-group"><label>Length / Height (Inches)</label><input type="text" id="m-length" placeholder="E.g., 40"></div>
+                <div class="form-group"><label>Sleeves (Length & Armhole)</label><input type="text" id="m-sleeves" placeholder="E.g., 18 / 16"></div>
+                <div class="form-group"><label>Shoulder</label><input type="text" id="m-shoulder" placeholder="E.g., 14.5"></div>
+                <div class="form-group"><label>Special Notes</label><textarea id="m-notes" placeholder="Extra margin, neck style..."></textarea></div>
+            </div>
+
+            <div class="action-bar" style="border-top:none; margin-top:10px;">
+                <button class="btn-save" style="margin-top:0;" onclick="saveMeasurements()">Save Naap</button>
+                <button class="btn-small btn-delete" style="width:100%; padding:12px; margin-top:8px;" onclick="closeModal('measure-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATALISTS -->
+    <datalist id="customer-suggestions"></datalist>
+    <datalist id="karigar-suggestions"></datalist>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="navTo('view-dashboard', this)"><span class="nav-icon">🏠</span>Home</div>
+        <div class="nav-item" id="nav-orders" onclick="navTo('view-orders', this)"><span class="nav-icon">👥</span>Clients</div>
+        <div class="nav-item" id="nav-summary" onclick="navTo('view-summary', this)"><span class="nav-icon">📊</span>Reports</div>
+    </nav>
+
+</div>
+
+<script>
+    let transactions = [];
+    let orders = [];
+    let measurementsBook = {}; 
+    let currentSummaryMode = 'monthly';
+    let editingTxId = null;
+    let editingOrderId = null;
+    let activeBillOrder = null;
+    let activeMeasureCustomer = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadData();
+        refreshAllData();
+    });
+
+    function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', newTheme);
+        document.getElementById('theme-btn').innerText = newTheme === 'dark' ? '☀️' : '🌙';
+        localStorage.setItem('adheera_theme_v16', newTheme);
+    }
+
+    function loadData() {
+        try {
+            const savedTheme = localStorage.getItem('adheera_theme_v16');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-btn').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+            const savedTx = localStorage.getItem('adheera_tx_mob_v16');
+            const savedOrd = localStorage.getItem('adheera_orders_mob_v16');
+            const savedMeas = localStorage.getItem('adheera_measure_v16');
+            if (savedTx) transactions = JSON.parse(savedTx);
+            if (savedOrd) orders = JSON.parse(savedOrd);
+            if (savedMeas) measurementsBook = JSON.parse(savedMeas);
+        } catch(e) { console.error(e); }
+    }
+
+    function saveData() {
+        localStorage.setItem('adheera_tx_mob_v16', JSON.stringify(transactions));
+        localStorage.setItem('adheera_orders_mob_v16', JSON.stringify(orders));
+        localStorage.setItem('adheera_measure_v16', JSON.stringify(measurementsBook));
+        updateSuggestions();
+    }
+
+    function startVoiceInput(amountInputId, nameInputId) {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            return alert("Voice recognition not supported in this browser.");
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.start();
+
+        recognition.onresult = function(event) {
+            let speechText = event.results[0][0].transcript;
+            let numbers = speechText.match(/\d+/);
+            if (numbers) document.getElementById(amountInputId).value = numbers[0];
+            let cleanedText = speechText.replace(/\d+/g, '').trim();
+            if (cleanedText && document.getElementById(nameInputId)) {
+                document.getElementById(nameInputId).value = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
+            }
+        };
+    }
+
+    function getNormalizedCanonicalName(name, existingSet) {
+        if (!name) return '';
+        let trimmed = name.trim();
+        let lower = trimmed.toLowerCase();
+        for (let existing of existingSet) {
+            if (existing.toLowerCase() === lower) return existing;
+        }
+        return trimmed;
+    }
+
+    function updateSuggestions() {
+        const customerList = document.getElementById('customer-suggestions');
+        const karigarList = document.getElementById('karigar-suggestions');
+        let uniqueCustomers = new Set();
+        let uniqueKarigars = new Set();
+        
+        orders.forEach(o => { 
+            if (o.customer) uniqueCustomers.add(getNormalizedCanonicalName(o.customer, uniqueCustomers));
+            if (o.karigars) o.karigars.forEach(k => { if (k.name) uniqueKarigars.add(getNormalizedCanonicalName(k.name, uniqueKarigars)); });
+        });
+
+        customerList.innerHTML = Array.from(uniqueCustomers).map(name => `<option value="${name}">`).join('');
+        karigarList.innerHTML = Array.from(uniqueKarigars).map(name => `<option value="${name}">`).join('');
+    }
+
+    function resetForms() {
+        editingTxId = null;
+        editingOrderId = null;
+        document.getElementById('in-save-btn').innerText = "Save Entry";
+        document.getElementById('out-save-btn').innerText = "Save Expense";
+        document.getElementById('ord-save-btn').innerText = "Save Order";
+        
+        ['in-amount', 'in-source', 'out-amount', 'out-payee', 
+         'ord-customer', 'ord-total-price', 'ord-received', 
+         'ord-fabric', 'ord-other'].forEach(id => document.getElementById(id).value = '');
+        
+        setPayType('Full');
+        document.getElementById('in-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('out-date').value = new Date().toISOString().split('T')[0];
+        
+        document.getElementById('products-container').innerHTML = '';
+        addProductField();
+        document.getElementById('karigars-container').innerHTML = '';
+        addKarigarField();
+        calculateOrderProfit();
+    }
+
+    function navTo(viewId, navElement = null) {
+        resetForms();
+        forceNavTo(viewId, navElement);
+    }
+
+    function forceNavTo(viewId, navElement = null) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+
+        if (navElement) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            navElement.classList.add('active');
+        } else {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(['view-dashboard','view-paisa-aaya','view-paisa-gaya'].includes(viewId)) document.getElementById('nav-home').classList.add('active');
+            else if(['view-orders','view-new-order'].includes(viewId)) document.getElementById('nav-orders').classList.add('active');
+            else if(viewId === 'view-summary') document.getElementById('nav-summary').classList.add('active');
+        }
+        refreshAllData();
+        window.scrollTo(0, 0);
+    }
+
+    function refreshAllData() {
+        updateSuggestions();
+        renderDashboard();
+        renderOrders();
+        populateMonthDropdown();
+        renderSummary();
+    }
+
+    function setMode(type, mode) {
+        document.getElementById(`${type}-mode`).value = mode;
+        document.getElementById(`btn-${type}-cash`).classList.remove('selected');
+        document.getElementById(`btn-${type}-online`).classList.remove('selected');
+        document.getElementById(`btn-${type}-${mode.toLowerCase()}`).classList.add('selected');
+    }
+
+    function setPayType(type) {
+        document.getElementById('ord-pay-type').value = type;
+        document.getElementById('btn-pay-full').classList.remove('selected');
+        document.getElementById('btn-pay-part').classList.remove('selected');
+        
+        if(type === 'Full') {
+            document.getElementById('btn-pay-full').classList.add('selected');
+            document.getElementById('ord-advance-div').style.display = 'none';
+        } else {
+            document.getElementById('btn-pay-part').classList.add('selected');
+            document.getElementById('ord-advance-div').style.display = 'block';
+        }
+        calculateOrderProfit();
+    }
+
+    function formatMoney(amount) {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
+    }
+
+    function addProductField(name = '', price = '') {
+        const container = document.getElementById('products-container');
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.gap = '8px';
+        div.style.marginBottom = '8px';
+        div.innerHTML = `
+            <input type="text" class="p-name" placeholder="Product Name" value="${name}" style="flex:2;">
+            <input type="number" class="p-price" placeholder="₹ Price" value="${price}" style="flex:1;" oninput="calculateOrderProfit()">
+            <button type="button" onclick="this.parentElement.remove(); calculateOrderProfit();" style="background:var(--danger); color:white; border:none; border-radius:12px; padding:0 12px; cursor:pointer; font-weight:bold;">X</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function addKarigarField(name = '', cost = '') {
+        const container = document.getElementById('karigars-container');
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.gap = '8px';
+        div.style.marginBottom = '8px';
+        div.innerHTML = `
+            <input type="text" class="k-name" list="karigar-suggestions" placeholder="Karigar Name" value="${name}" style="flex:1;">
+            <input type="number" class="k-cost" placeholder="₹ Cost" value="${cost}" style="flex:1;" oninput="calculateOrderProfit()">
+            <button type="button" onclick="this.parentElement.remove(); calculateOrderProfit();" style="background:var(--danger); color:white; border:none; border-radius:12px; padding:0 12px; cursor:pointer; font-weight:bold;">X</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function calculateOrderProfit() {
+        let totalPrice = 0;
+        document.querySelectorAll('.p-price').forEach(input => { totalPrice += parseFloat(input.value) || 0; });
+        document.getElementById('ord-total-price').value = totalPrice || '';
+
+        const payType = document.getElementById('ord-pay-type').value;
+        let received = totalPrice;
+        if (payType === 'Part') received = parseFloat(document.getElementById('ord-received').value) || 0;
+
+        const fabric = parseFloat(document.getElementById('ord-fabric').value) || 0;
+        const other = parseFloat(document.getElementById('ord-other').value) || 0;
+        let karigarTotal = 0;
+        document.querySelectorAll('.k-cost').forEach(input => { karigarTotal += parseFloat(input.value) || 0; });
+
+        const totalCost = fabric + karigarTotal + other;
+        const profit = totalPrice - totalCost;
+        const pending = totalPrice - received;
+
+        document.getElementById('calc-price').innerText = formatMoney(totalPrice);
+        document.getElementById('calc-cost').innerText = `- ${formatMoney(totalCost)}`;
+        document.getElementById('calc-profit').innerText = formatMoney(profit);
+        document.getElementById('calc-pending').innerText = formatMoney(pending > 0 ? pending : 0);
+    }
+
+    function savePaisaAaya() {
+        const amount = parseFloat(document.getElementById('in-amount').value);
+        if (!amount || amount <= 0) return alert("Please enter a valid amount.");
+        let sourceName = document.getElementById('in-source').value.trim() || 'Client';
+        
+        let allCustomers = new Set();
+        orders.forEach(o => allCustomers.add(o.customer));
+        sourceName = getNormalizedCanonicalName(sourceName, allCustomers);
+
+        const category = document.getElementById('in-category').value;
+        const date = document.getElementById('in-date').value;
+        const mode = document.getElementById('in-mode').value;
+
+        if (category === 'Pending Cleared' || category === 'Full Payment' || category === 'Customer Advance') {
+            let remainingToAllocate = amount;
+            orders.forEach(ord => {
+                if (ord.customer.trim().toLowerCase() === sourceName.toLowerCase() && remainingToAllocate > 0) {
+                    let pending = ord.totalPrice - ord.receivedAmount;
+                    if (pending > 0) {
+                        let allocation = Math.min(pending, remainingToAllocate);
+                        ord.receivedAmount += allocation;
+                        remainingToAllocate -= allocation;
+                    }
+                }
+            });
+        }
+
+        const tx = { id: editingTxId || Date.now().toString(), type: 'in', amount, date, source: sourceName, category, mode };
+        if (editingTxId) transactions[transactions.findIndex(t => t.id === editingTxId)] = tx; else transactions.push(tx);
+        saveData(); navTo('view-dashboard', document.getElementById('nav-home'));
+    }
+
+    function savePaisaGaya() {
+        const amount = parseFloat(document.getElementById('out-amount').value);
+        if (!amount || amount <= 0) return alert("Please enter a valid amount.");
+        let payeeName = document.getElementById('out-payee').value.trim();
+        
+        if (payeeName) {
+            let allPayees = new Set();
+            transactions.forEach(t => { if(t.payee) allPayees.add(t.payee.split(' (')[0].trim()); });
+            orders.forEach(o => { if(o.karigars) o.karigars.forEach(k => allPayees.add(k.name)); });
+            payeeName = getNormalizedCanonicalName(payeeName, allPayees);
+        }
+
+        const tx = { id: editingTxId || Date.now().toString(), type: 'out', amount, date: document.getElementById('out-date').value, category: document.getElementById('out-category').value, payee: payeeName, mode: document.getElementById('out-mode').value };
+        if (editingTxId) transactions[transactions.findIndex(t => t.id === editingTxId)] = tx; else transactions.push(tx);
+        saveData(); navTo('view-dashboard', document.getElementById('nav-home'));
+    }
+
+    function saveOrder() {
+        let customerInput = document.getElementById('ord-customer').value.trim() || 'Unknown Client';
+        let allCustomers = new Set();
+        orders.forEach(o => allCustomers.add(o.customer));
+        const customer = getNormalizedCanonicalName(customerInput, allCustomers);
+
+        const mode = document.getElementById('ord-mode').value;
+        const payType = document.getElementById('ord-pay-type').value;
+        
+        let items = [];
+        let totalPrice = 0;
+        document.querySelectorAll('#products-container > div').forEach(row => {
+            const pName = row.querySelector('.p-name').value || 'Item';
+            const pPrice = parseFloat(row.querySelector('.p-price').value) || 0;
+            if(pPrice > 0) { items.push({name: pName, price: pPrice}); totalPrice += pPrice; }
+        });
+
+        if (totalPrice <= 0 || items.length === 0) return alert("Please add at least one product and price.");
+
+        let receivedAmount = (payType === 'Part') ? (parseFloat(document.getElementById('ord-received').value) || 0) : totalPrice;
+        const fabric = parseFloat(document.getElementById('ord-fabric').value) || 0;
+        const other = parseFloat(document.getElementById('ord-other').value) || 0;
+        
+        let karigars = []; let karigarTotal = 0;
+        let allKarigars = new Set();
+        orders.forEach(o => { if(o.karigars) o.karigars.forEach(k => allKarigars.add(k.name)); });
+
+        document.querySelectorAll('#karigars-container > div').forEach(row => {
+            let kNameInput = row.querySelector('.k-name').value.trim() || 'Unknown Karigar';
+            let kName = getNormalizedCanonicalName(kNameInput, allKarigars);
+            allKarigars.add(kName);
+
+            const kCost = parseFloat(row.querySelector('.k-cost').value) || 0;
+            if (kCost > 0) { karigars.push({ name: kName, cost: kCost }); karigarTotal += kCost; }
+        });
+
+        const orderId = editingOrderId || Date.now().toString();
+        const orderDate = new Date().toISOString().split('T')[0];
+        const itemNamesStr = items.map(i => i.name).join(', ');
+
+        const orderObj = {
+            id: orderId, date: orderDate, customer, items,
+            totalPrice, receivedAmount,
+            fabric, karigars, other,
+            totalCost: fabric + karigarTotal + other,
+            profit: totalPrice - (fabric + karigarTotal + other)
+        };
+
+        if (editingOrderId) {
+            orders = orders.filter(o => o.id !== editingOrderId);
+            transactions = transactions.filter(t => t.orderId !== editingOrderId);
+        }
+        orders.push(orderObj);
+
+        const baseId = Date.now();
+        if (receivedAmount > 0) transactions.push({ id: baseId + 'A', orderId, type: 'in', amount: receivedAmount, date: orderDate, source: `${customer} (${itemNamesStr})`, category: 'Full Payment', mode });
+        if (fabric > 0) transactions.push({ id: baseId + 'B', orderId, type: 'out', amount: fabric, date: orderDate, payee: `Fabric for ${customer}`, category: 'Fabric', mode });
+        karigars.forEach((k, index) => {
+            transactions.push({ id: baseId + 'C' + index, orderId, type: 'out', amount: k.cost, date: orderDate, payee: `${k.name} (Stitching for ${customer})`, category: 'Karigar', mode });
+        });
+        if (other > 0) transactions.push({ id: baseId + 'D', orderId, type: 'out', amount: other, date: orderDate, payee: `Accessories for ${customer}`, category: 'Accessories', mode });
+
+        saveData(); alert("Order saved successfully!"); navTo('view-orders', document.getElementById('nav-orders'));
+    }
+
+    function receivePending(orderId) {
+        const order = orders.find(o => o.id === orderId);
+        if(!order) return;
+        const pending = order.totalPrice - order.receivedAmount;
+        if (pending <= 0) return alert("Payment is already fully cleared.");
+
+        const amountInput = prompt(`How much amount collected? (Total pending: ₹${pending})`, pending);
+        if (amountInput === null) return;
+        const amount = parseFloat(amountInput);
+        if (isNaN(amount) || amount <= 0 || amount > pending) return alert("Invalid amount entered.");
+
+        order.receivedAmount += amount;
+        transactions.push({
+            id: Date.now().toString(), orderId, type: 'in', amount, date: new Date().toISOString().split('T')[0],
+            source: `${order.customer} (Pending Collection)`, category: 'Pending Cleared', mode: 'Cash'
+        });
+
+        saveData(); refreshAllData(); alert(`Successfully received ₹${amount}!`);
+    }
+
+    function openMeasurements(customerName) {
+        activeMeasureCustomer = customerName.trim().toLowerCase();
+        document.getElementById('measure-cust-title').innerText = `Client: ${customerName}`;
+        
+        let data = measurementsBook[activeMeasureCustomer] || { chest: '', waist: '', length: '', sleeves: '', shoulder: '', notes: '' };
+        document.getElementById('m-chest').value = data.chest || '';
+        document.getElementById('m-waist').value = data.waist || '';
+        document.getElementById('m-length').value = data.length || '';
+        document.getElementById('m-sleeves').value = data.sleeves || '';
+        document.getElementById('m-shoulder').value = data.shoulder || '';
+        document.getElementById('m-notes').value = data.notes || '';
+
+        const modal = document.getElementById('measure-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.style.opacity = '1', 10);
+    }
+
+    function saveMeasurements() {
+        if (!activeMeasureCustomer) return;
+        measurementsBook[activeMeasureCustomer] = {
+            chest: document.getElementById('m-chest').value,
+            waist: document.getElementById('m-waist').value,
+            length: document.getElementById('m-length').value,
+            sleeves: document.getElementById('m-sleeves').value,
+            shoulder: document.getElementById('m-shoulder').value,
+            notes: document.getElementById('m-notes').value
+        };
+        saveData();
+        closeModal('measure-modal');
+        renderOrders();
+        alert("Naap saved successfully!");
+    }
+
+    function printBill(orderId) {
+        const order = orders.find(o => o.id === orderId);
+        if(!order) return;
+        activeBillOrder = order;
+
+        document.getElementById('inv-date').innerText = `Date: ${order.date}`;
+        document.getElementById('inv-customer-name').innerText = order.customer;
+        document.getElementById('inv-id').innerText = `#AO-${order.id.slice(-6)}`;
+        
+        const itemsBody = document.getElementById('inv-items-body');
+        itemsBody.innerHTML = order.items.map(i => `
+            <tr>
+                <td>${i.name}</td>
+                <td style="text-align:right;">${formatMoney(i.price)}</td>
+            </tr>
+        `).join('');
+
+        document.getElementById('inv-total').innerText = formatMoney(order.totalPrice);
+        document.getElementById('inv-paid').innerText = formatMoney(order.receivedAmount);
+        
+        const pending = order.totalPrice - order.receivedAmount;
+        const pendingRow = document.getElementById('inv-pending-row');
+        if (pending > 0) {
+            pendingRow.style.display = 'flex';
+            document.getElementById('inv-pending').innerText = formatMoney(pending);
+        } else {
+            pendingRow.style.display = 'none';
+        }
+
+        const modal = document.getElementById('bill-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.style.opacity = '1', 10);
+    }
+
+    function shareOnWhatsApp() {
+        if (!activeBillOrder) return;
+        let o = activeBillOrder;
+        let pending = o.totalPrice - o.receivedAmount;
+        let itemsText = o.items.map(i => `• ${i.name}: ${formatMoney(i.price)}`).join('\n');
+        
+        let msg = `*House of Adheera ✨* - Digital Bill\n` +
+                  `------------------\n` +
+                  `*Client:* ${o.customer}\n` +
+                  `*Date:* ${o.date}\n\n` +
+                  `*Items:*\n${itemsText}\n\n` +
+                  `*Total:* ${formatMoney(o.totalPrice)}\n` +
+                  `*Paid:* ${formatMoney(o.receivedAmount)}\n` +
+                  (pending > 0 ? `*Balance Pending:* ${formatMoney(pending)}\n\n` : `*Status:* Paid Fully ✅\n\n`) +
+                  `Thank you for choosing House of Adheera! 💕`;
+        
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.opacity = '0';
+        setTimeout(() => modal.style.display = 'none', 250);
+    }
+
+    function renderDashboard() {
+        let totalIn = 0, totalOut = 0, bizExp = 0; 
+        transactions.forEach(tx => {
+            if (tx.type === 'in') totalIn += tx.amount;
+            else { totalOut += tx.amount; if (tx.category !== 'Personal Withdrawal') bizExp += tx.amount; }
+        });
+
+        document.getElementById('dash-in').innerText = formatMoney(totalIn);
+        document.getElementById('dash-out').innerText = formatMoney(totalOut);
+        document.getElementById('dash-balance').innerText = formatMoney(totalIn - totalOut);
+        document.getElementById('dash-profit').innerText = formatMoney(totalIn - bizExp);
+
+        let pendingCollections = [];
+        orders.forEach(o => {
+            const pending = o.totalPrice - o.receivedAmount;
+            if(pending > 0) pendingCollections.push({ customer: o.customer, pending, orderId: o.id });
+        });
+
+        const remContainer = document.getElementById('reminders-container');
+        if(pendingCollections.length > 0) {
+            remContainer.innerHTML = `
+                <div class="reminder-box">
+                    <h3>⚠️ Pending Dues (Scroll Right)</h3>
+                    <div class="reminder-scroll-container">
+                        ${pendingCollections.map(p => `
+                            <div class="reminder-item">
+                                <div>
+                                    <strong style="text-transform:capitalize; font-size:14px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.customer}</strong>
+                                    <span class="text-warning" style="font-weight:700; font-size:15px; display:block; margin-top:2px;">Pending: ${formatMoney(p.pending)}</span>
+                                </div>
+                                <button class="btn-small btn-receive" onclick="receivePending('${p.orderId}')">Collect</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else {
+            remContainer.innerHTML = '';
+        }
+
+        const list = document.getElementById('recent-transactions-list');
+        list.innerHTML = transactions.length === 0 ? `<div class="empty-state"><p>No transactions recorded yet.</p></div>` : 
+            [...transactions].reverse().slice(0, 5).map(tx => `
+                <div class="list-item">
+                    <div style="flex:1; overflow:hidden;">
+                        <h4 style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${tx.type === 'in' ? (tx.source || tx.category) : (tx.payee || tx.category)}</h4>
+                        <p style="font-size:11px; color:var(--text-muted);">${tx.date} • ${tx.category}</p>
+                    </div>
+                    <div class="item-amount ${tx.type === 'in' ? 'text-green' : 'text-red'}" style="font-size:14px; font-weight:700;">
+                        ${tx.type === 'in' ? '+' : '-'} ${formatMoney(tx.amount)}
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    function renderOrders() {
+        const list = document.getElementById('orders-list');
+        if (orders.length === 0) { list.innerHTML = `<div class="empty-state"><p>No client orders added yet.</p></div>`; return; }
+
+        let grouped = {};
+        orders.forEach(o => {
+            let cKey = o.customer.trim().toLowerCase();
+            if(!grouped[cKey]) grouped[cKey] = { name: o.customer, orders: [], totalPending: 0, totalPaid: 0 };
+            grouped[cKey].orders.push(o);
+            grouped[cKey].totalPending += (o.totalPrice - o.receivedAmount);
+            grouped[cKey].totalPaid += o.receivedAmount;
+        });
+
+        list.innerHTML = Object.values(grouped).map(group => {
+            let mData = measurementsBook[group.name.trim().toLowerCase()];
+            let measBadgeHtml = '';
+            if (mData && (mData.chest || mData.waist || mData.length)) {
+                measBadgeHtml = `
+                    <div class="measurement-badge">
+                        <span>📐 Naap:</span>
+                        ${mData.chest ? `Chest: ${mData.chest}"` : ''}
+                        ${mData.waist ? `Waist: ${mData.waist}"` : ''}
+                        ${mData.length ? `Len: ${mData.length}"` : ''}
+                        ${mData.shoulders ? `Sh: ${mData.shoulders}"` : ''}
+                        ${mData.notes ? `<br>📝 Notes: ${mData.notes}` : ''}
+                    </div>
+                `;
+            } else {
+                measBadgeHtml = `<div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">⚠️ Measurements not recorded yet.</div>`;
+            }
+
+            return `
+            <div class="customer-card">
+                <div class="customer-header">
+                    <h2>${group.name}</h2>
+                    <div style="text-align:right;">
+                        ${group.totalPending > 0 ? `<div class="text-warning" style="font-weight:700; font-size:15px;">Pending: ${formatMoney(group.totalPending)}</div>` : `<div class="text-green" style="font-size:13px; font-weight:600;">Cleared ✓</div>`}
+                    </div>
+                </div>
+
+                ${measBadgeHtml}
+                
+                <div style="margin-bottom:10px;">
+                    <button class="btn-small btn-measure" style="width:100%; padding:10px; font-size:13px;" onclick="openMeasurements('${group.name}')">📐 Update Naap (Measurements)</button>
+                </div>
+
+                <h4 style="font-size:13px; color:var(--primary); margin:10px 0 6px; font-weight:700;">Order History:</h4>
+                
+                ${group.orders.reverse().map(ord => {
+                    const pending = ord.totalPrice - ord.receivedAmount;
+                    const itemsStr = ord.items.map(i => `${i.name} (${formatMoney(i.price)})`).join(', ');
+                    return `
+                    <div class="order-sub-item">
+                        <div style="display:flex; justify-content:space-between; font-size:12px;">
+                            <span style="color:var(--text-muted);">${ord.date}</span>
+                            <span style="font-weight:700;">Bill: ${formatMoney(ord.totalPrice)}</span>
+                        </div>
+                        <div class="products-list-display">👗 Items: ${itemsStr}</div>
+                        
+                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px;">
+                            <span style="color:var(--success); font-weight:600;">Paid: ${formatMoney(ord.receivedAmount)}</span>
+                            ${pending > 0 ? `<span class="text-warning" style="font-weight:600;">Pending: ${formatMoney(pending)}</span>` : ''}
+                        </div>
+                        
+                        <div class="action-bar" style="padding-top:8px; margin-top:4px;">
+                            <button class="btn-small btn-print" onclick="printBill('${ord.id}')">🖨️ Bill</button>
+                            ${pending > 0 ? `<button class="btn-small btn-receive" onclick="receivePending('${ord.id}')">Collect</button>` : ''}
+                            <button class="btn-small btn-edit" onclick="editOrder('${ord.id}')">Edit</button>
+                            <button class="btn-small btn-delete" onclick="deleteOrder('${ord.id}')">Delete</button>
+                        </div>
+                    </div>
+                    `
+                }).join('')}
+            </div>
+            `;
+        }).join('');
+    }
+
+    function switchSummaryMode(mode) {
+        currentSummaryMode = mode;
+        document.getElementById('tab-monthly').classList.toggle('active', mode === 'monthly');
+        document.getElementById('tab-overall').classList.toggle('active', mode === 'overall');
+        document.getElementById('month-selector-group').style.display = mode === 'monthly' ? 'block' : 'none';
+        renderSummary();
+    }
+
+    function populateMonthDropdown() {
+        const select = document.getElementById('summary-month-select');
+        let monthsSet = new Set();
+        const now = new Date();
+        const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        monthsSet.add(currentMonthKey);
+
+        transactions.forEach(tx => { if (tx.date) monthsSet.add(tx.date.substring(0, 7)); });
+
+        let sortedMonths = Array.from(monthsSet).sort().reverse();
+        let previousSelected = select.value;
+
+        select.innerHTML = sortedMonths.map(mKey => {
+            let [yr, mn] = mKey.split('-');
+            let dateObj = new Date(yr, mn - 1, 1);
+            let monthName = dateObj.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            return `<option value="${mKey}">${monthName}</option>`;
+        }).join('');
+
+        if (previousSelected && sortedMonths.includes(previousSelected)) select.value = previousSelected;
+    }
+
+    function renderSummary() {
+        let sumIn = 0, sumOutBiz = 0, sumOutPers = 0; 
+        let karigarTotals = {};
+        let customerRevenue = {};
+        let filteredTx = [];
+
+        if (currentSummaryMode === 'monthly') {
+            const selectedMonth = document.getElementById('summary-month-select').value;
+            if (!selectedMonth) return;
+            let [sYear, sMonth] = selectedMonth.split('-');
+            let dateObj = new Date(sYear, sMonth - 1, 1);
+            document.getElementById('selected-summary-title').innerText = `${dateObj.toLocaleString('en-US', { month: 'long', year: 'numeric' })} Breakdown`;
+
+            transactions.forEach(tx => {
+                if (tx.date && tx.date.startsWith(selectedMonth)) {
+                    filteredTx.push(tx);
+                    if (tx.type === 'in') {
+                        sumIn += tx.amount;
+                        if(tx.source) customerRevenue[tx.source.split(' (')[0].trim()] = (customerRevenue[tx.source.split(' (')[0].trim()] || 0) + tx.amount;
+                    } else {
+                        if (tx.category === 'Personal Withdrawal') sumOutPers += tx.amount;
+                        else sumOutBiz += tx.amount;
+                        
+                        if (tx.category === 'Karigar' || (tx.payee && !tx.payee.startsWith('Fabric') && !tx.payee.startsWith('Accessories') && !tx.payee.startsWith('Landlord'))) {
+                            let kName = tx.payee ? tx.payee.split(' (')[0].trim() : 'Unknown Karigar';
+                            if (kName) {
+                                let canonical = getNormalizedCanonicalName(kName, new Set(Object.keys(karigarTotals)));
+                                karigarTotals[canonical] = (karigarTotals[canonical] || 0) + tx.amount;
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('selected-summary-title').innerText = `Lifetime Overall Breakdown`;
+            filteredTx = transactions;
+            transactions.forEach(tx => {
+                if (tx.type === 'in') {
+                    sumIn += tx.amount;
+                    if(tx.source) customerRevenue[tx.source.split(' (')[0].trim()] = (customerRevenue[tx.source.split(' (')[0].trim()] || 0) + tx.amount;
+                } else {
+                    if (tx.category === 'Personal Withdrawal') sumOutPers += tx.amount;
+                    else sumOutBiz += tx.amount;
+                    
+                    if (tx.category === 'Karigar' || (tx.payee && !tx.payee.startsWith('Fabric') && !tx.payee.startsWith('Accessories') && !tx.payee.startsWith('Landlord'))) {
+                        let kName = tx.payee ? tx.payee.split(' (')[0].trim() : 'Unknown Karigar';
+                        if (kName) {
+                            let canonical = getNormalizedCanonicalName(kName, new Set(Object.keys(karigarTotals)));
+                            karigarTotals[canonical] = (karigarTotals[canonical] || 0) + tx.amount;
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('sum-in').innerText = formatMoney(sumIn);
+        document.getElementById('sum-out-biz').innerText = formatMoney(sumOutBiz);
+        document.getElementById('sum-out-pers').innerText = formatMoney(sumOutPers);
+        document.getElementById('sum-profit').innerText = formatMoney(sumIn - sumOutBiz);
+
+        let totalFlow = sumIn + sumOutBiz;
+        document.getElementById('graph-in-fill').style.width = `${totalFlow > 0 ? (sumIn / totalFlow) * 100 : 50}%`;
+        document.getElementById('graph-out-fill').style.width = `${totalFlow > 0 ? (sumOutBiz / totalFlow) * 100 : 50}%`;
+        
+        let sortedVIP = Object.entries(customerRevenue).sort((a,b) => b[1] - a[1]).slice(0, 3);
+        const vipSection = document.getElementById('vip-customers-section');
+        if (sortedVIP.length > 0) {
+            vipSection.style.display = 'block';
+            document.getElementById('vip-customers-list').innerHTML = sortedVIP.map(([name, rev], idx) => `
+                <div class="calc-row" style="border-bottom: 1px dashed rgba(212,175,55,0.2); padding-bottom: 4px;">
+                    <span style="font-weight:600; text-transform:capitalize;">#${idx+1} ${name}</span> 
+                    <span style="font-weight:700; color:var(--accent-gold);">${formatMoney(rev)}</span>
+                </div>
+            `).join('');
+        } else { vipSection.style.display = 'none'; }
+
+        const kSection = document.getElementById('karigar-summary-section');
+        if (Object.keys(karigarTotals).length > 0) {
+            kSection.style.display = 'block';
+            document.getElementById('karigar-summary-list').innerHTML = Object.keys(karigarTotals).map(name => `
+                <div class="calc-row" style="border-bottom: 1px dashed rgba(212,175,55,0.2); padding-bottom: 6px;"><span style="font-weight:500;">${name}:</span> <span style="font-weight:700; color:var(--accent-gold);">${formatMoney(karigarTotals[name])}</span></div>
+            `).join('');
+        } else { kSection.style.display = 'none'; }
+
+        const historyList = document.getElementById('history-list');
+        if (filteredTx.length === 0) {
+            historyList.innerHTML = `<div class="empty-state"><p>No transactions found.</p></div>`;
+            return;
+        }
+
+        historyList.innerHTML = [...filteredTx].reverse().map(tx => `
+            <div class="list-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="overflow:hidden;">
+                        <h4 style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${tx.type === 'in' ? (tx.source || tx.category) : (tx.payee || tx.category)}</h4>
+                        <p style="font-size:11px; color:var(--text-muted);">${tx.date} • ${tx.category}</p>
+                    </div>
+                    <div class="item-amount ${tx.type === 'in' ? 'text-green' : 'text-red'}" style="font-size:14px; font-weight:700;">
+                        ${tx.type === 'in' ? '+' : '-'} ${formatMoney(tx.amount)}
+                    </div>
+                </div>
+                ${!tx.orderId ? `<div class="action-bar" style="border-top:none; padding-top:4px; justify-content:flex-end;"><button class="btn-small btn-edit" onclick="editTx('${tx.id}')">Edit</button><button class="btn-small btn-delete" onclick="deleteTx('${tx.id}')">Delete</button></div>` : `<div style="font-size:10px; color:var(--text-muted);">* Linked to Order</div>`}
+            </div>
+        `).join('');
+    }
+
+    function editTx(id) {
+        const tx = transactions.find(t => t.id === id);
+        if (!tx || tx.orderId) return alert("Please edit from Clients tab.");
+        resetForms(); editingTxId = id;
+        if (tx.type === 'in') {
+            document.getElementById('in-amount').value = tx.amount; document.getElementById('in-source').value = tx.source; document.getElementById('in-category').value = tx.category; document.getElementById('in-date').value = tx.date; setMode('in', tx.mode);
+            document.getElementById('in-title').innerText = "Edit Inflow ✏️"; document.getElementById('in-save-btn').innerText = "Update"; forceNavTo('view-paisa-aaya', document.getElementById('nav-home'));
+        } else {
+            document.getElementById('out-amount').value = tx.amount; document.getElementById('out-payee').value = tx.payee ? tx.payee.split(' (')[0].trim() : ''; document.getElementById('out-category').value = tx.category; document.getElementById('out-date').value = tx.date; setMode('out', tx.mode);
+            document.getElementById('out-title').innerText = "Edit Expense ✏️"; document.getElementById('out-save-btn').innerText = "Update"; forceNavTo('view-paisa-gaya', document.getElementById('nav-home'));
+        }
+    }
+
+    function editOrder(id) {
+        const o = orders.find(x => x.id === id);
+        if (!o) return;
+        resetForms(); editingOrderId = id;
+        document.getElementById('ord-customer').value = o.customer;
+        
+        const pCont = document.getElementById('products-container'); pCont.innerHTML = '';
+        o.items.forEach(i => addProductField(i.name, i.price));
+
+        if (o.receivedAmount < o.totalPrice) { setPayType('Part'); document.getElementById('ord-received').value = o.receivedAmount; } else setPayType('Full');
+        document.getElementById('ord-fabric').value = o.fabric; document.getElementById('ord-other').value = o.other;
+
+        const kCont = document.getElementById('karigars-container'); kCont.innerHTML = '';
+        o.karigars.forEach(k => addKarigarField(k.name, k.cost));
+
+        document.getElementById('ord-title').innerText = "Edit Order ✏️"; document.getElementById('ord-save-btn').innerText = "Update Order";
+        calculateOrderProfit(); forceNavTo('view-new-order', document.getElementById('nav-orders'));
+    }
+
+    function deleteTx(id) { if(confirm("Delete transaction?")) { transactions = transactions.filter(t => t.id !== id); saveData(); refreshAllData(); } }
+    function deleteOrder(id) { if(confirm("Delete order?")) { orders = orders.filter(o => o.id !== id); transactions = transactions.filter(t => t.orderId !== id); saveData(); refreshAllData(); } }
+</script>
+</body>
+</html>
